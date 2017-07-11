@@ -1,0 +1,17 @@
+
+#canvas {
+    width: 100%;
+    min-height: 32px;
+    white-space: pre-line;
+    cursor: pointer;
+}
+#canvas-copy {
+    white-space: pre-line;
+    height: 0;
+    width: 0;
+    border: 0;
+}
+.twemoji {
+    display: inline-block;
+    min-width: 20px;
+}
