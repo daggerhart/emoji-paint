@@ -1,6 +1,4 @@
-emojiRepo = emojiRepo || {};
-
-emojiRepo.library = [
+[
   {
     "emoji": "😀"
   , "description": "grinning face"

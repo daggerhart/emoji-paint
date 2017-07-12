@@ -11,38 +11,89 @@
 </head>
 <body>
 
-<div id="wrapper" class="container">
-    <div class="row">
-        <div id="left" class="col-sm-6">
-            <div id="canvas-wrapper">
+<div class="container">
+    <div id="app" class="row">
+        <div class="col-sm-6">
+            <div>
                 <h2>Canvas</h2>
-                <div id="canvas">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label>Rows:</label>
+                        <input class="form-control" type="number" v-model="gridRows" @change="adjustGrid()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Columns: </label>
+                        <input class="form-control" type="number" v-model="gridColumns" @change="adjustGrid()">
+                    </div>
                 </div>
-                <button id="canvas-copy-button">Copy</button>
+
+                <div id="canvas">
+                    <template v-for="(row,y) in grid">
+                        <template v-for="(item,x) in row">
+                            <span class="twemoji"
+                                  @click="paintCurrentEmojiOnGrid(x,y)"
+                                  :title="'('+x+','+y+') - ' + item.name"
+                            >{{ item.emoji }}</span>
+                        </template>{{ linebreak }}</template>
+                    <!-- ^^ @todo that better - linebreak stuff vs pre-line  -->
+                </div>
+
+                <button class="btn btn-default"
+                        @click="copyToClipboard()"
+                >Copy</button>
                 <textarea id="canvas-copy" cols="35" rows="4"></textarea>
             </div>
         </div>
-        <div id="right" class="col-sm-4">
+        <div class="col-sm-4">
             <h3>Tools</h3>
-            <div id="tools">
-                <div id="current"><strong>Current: </strong> <span id="currentEmoji"></span></div>
-                <div id="background"><strong>Background: </strong> <select id="backgroundEmoji" class="form-control"></select></div>
+            <div>
+                <div>
+                    <strong>Current: </strong>
+                    <span id="currentEmoji">
+                        <span class="twemoji" :title="currentEmoji.name">{{ currentEmoji.emoji }}</span>
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label>Background: </label>
+                    <select class="form-control"
+                            :value="backgroundEmoji.name"
+                            @change="setBackgroundEmoji($event.target.value); updateBackgroundEmoji();">
+                        <option v-for="item in backgrounds" :value="item.name">{{ item.emoji }} - {{ item.name }}</option>
+                    </select>
+                </div>
             </div>
 
             <h3>Palette</h3>
-            <div id="palette"></div>
+            <div>
+                <span class="twemoji"
+                      v-for="item in palette"
+                      :title="item.name"
+                      @click="setCurrentEmoji(item.name)"
+                >{{ item.emoji }}</span>
+            </div>
 
             <h3>Library</h3>
-            <div id="library"></div>
+            <div>
+                <div v-for="(items, category) in emojiLibraryByCategory">
+                    <h4>{{ category }}</h4>
+                    <div>
+                        <span class="twemoji"
+                              v-for="item in items"
+                              :title="item.name"
+                              @click="setCurrentEmoji(item.name); addToPalette(item.name);"
+                        >{{ item.emoji }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="https://twemoji.maxcdn.com/2/twemoji.min.js?2.3.0"></script>
+<script src="https://cdn.jsdelivr.net/vue/latest/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <script src="assets/main.js"></script>
-<script src="assets/emoji.js"></script>
 </body>
 </html>
