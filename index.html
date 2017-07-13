@@ -4,90 +4,143 @@
     <meta charset="UTF-8">
     <title>Emoji Painter</title><!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
     <link rel="stylesheet" href="assets/style.css">
 
 </head>
 <body>
-
-<div class="container">
-    <div id="app" class="row">
-        <div class="col-sm-6">
-            <div>
-                <h2>Canvas</h2>
-                <div class="form-inline">
-                    <div class="form-group">
-                        <label>Rows:</label>
-                        <input class="form-control" type="number" v-model="gridRows" @change="adjustGrid()">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Columns: </label>
-                        <input class="form-control" type="number" v-model="gridColumns" @change="adjustGrid()">
-                    </div>
-                </div>
-
-                <div id="canvas">
-                    <template v-for="(row,y) in grid">
-                        <template v-for="(item,x) in row">
-                            <span class="twemoji"
-                                  @click="paintCurrentEmojiOnGrid(x,y)"
-                                  :title="'('+x+','+y+') - ' + item.name"
-                            >{{ item.emoji }}</span>
-                        </template>{{ linebreak }}</template>
-                    <!-- ^^ @todo that better - linebreak stuff vs pre-line  -->
-                </div>
-
-                <button class="btn btn-default"
-                        @click="copyToClipboard()"
-                >Copy</button>
-                <textarea id="canvas-copy" cols="35" rows="4"></textarea>
-            </div>
+<div id="app">
+    <div class="container">
+        <div class="page-header">
+            <h1>
+                Emoji Paint
+                <span class="emoji" v-if="getEmoji('art')">{{ getEmoji('art').emoji }}</span>
+                <span class="emoji" v-if="getEmoji('paintbrush')">{{ getEmoji('paintbrush').emoji }}</span>
+            </h1>
         </div>
-        <div class="col-sm-4">
-            <h3>Tools</h3>
-            <div>
-                <div>
-                    <strong>Current: </strong>
-                    <span id="currentEmoji">
-                        <span class="twemoji" :title="currentEmoji.name">{{ currentEmoji.emoji }}</span>
-                    </span>
+        <div class="row">
+            <div class="col-sm-7">
+                <div class="box">
+                    <h3 class="title">
+                        <span class="emoji" v-if="getEmoji('framed_picture')">{{ getEmoji('framed_picture').emoji }}</span>
+                        <span>Canvas</span>
+                    </h3>
+                    <div class="content">
+                        <div class="canvas-form form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Rows:</label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" type="number" v-model="gridRows" @change="adjustGrid()">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Columns: </label>
+                                <div class="col-sm-10">
+                                    <input class="form-control" type="number" v-model="gridColumns" @change="adjustGrid()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Background: </label>
-                    <select class="form-control"
-                            :value="backgroundEmoji.name"
-                            @change="setBackgroundEmoji($event.target.value); updateBackgroundEmoji();">
-                        <option v-for="item in backgrounds" :value="item.name">{{ item.emoji }} - {{ item.name }}</option>
-                    </select>
+
+                <div id="canvas" class="box">
+                    <div class="content">
+                        <template v-for="(row,y) in grid">
+                            <template v-for="(item,x) in row">
+                                <span class="emoji"
+                                      @click="paintCurrentEmojiOnGrid(x,y)"
+                                      :title="'('+x+','+y+') - ' + item.name">{{ item.emoji }}</span>
+                            </template>{{ linebreak }}</template>
+                        <!-- ^^ @todo that better - linebreak stuff vs pre-line  -->
+                    </div>
+                </div>
+
+                <div class="box">
+                    <h3 class="title">
+                        <span class="emoji" v-if="getEmoji('clipboard')">{{ getEmoji('clipboard').emoji }}</span>
+                        <span>Copy to Clipboard</span>
+                    </h3>
+                    <div class="content">
+                        <button class="btn btn-default"
+                                @click="copyToClipboard()">Copy</button>
+                        <textarea id="canvas-copy" cols="35" rows="4"></textarea>
+                    </div>
                 </div>
             </div>
+            <div class="col-sm-5">
+                <div class="box">
+                    <h3 class="title">
+                        <span class="emoji" v-if="getEmoji('paintbrush')">{{ getEmoji('paintbrush').emoji }}</span>
+                        <span>Tools</span>
+                    </h3>
+                    <div class="content">
+                        <div>
+                            <strong>Current: </strong>
+                            <span id="currentEmoji">
+                            <span class="emoji" :title="currentEmoji.name">{{ currentEmoji.emoji }}</span>
+                        </span>
+                        </div>
+                        <div class="form-group">
+                            <label>Background: </label>
+                            <select class="form-control"
+                                    :value="backgroundEmoji.name"
+                                    @change="setBackgroundEmoji($event.target.value); updateBackgroundEmoji();">
+                                <option v-for="item in backgrounds" :value="item.name">{{ item.emoji }} - {{ item.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
-            <h3>Palette</h3>
-            <div>
-                <span class="twemoji"
-                      v-for="item in palette"
-                      :title="item.name"
-                      @click="setCurrentEmoji(item.name)"
-                >{{ item.emoji }}</span>
-            </div>
-
-            <h3>Library</h3>
-            <div>
-                <div v-for="(items, category) in emojiLibraryByCategory">
-                    <h4>{{ category }}</h4>
-                    <div>
-                        <span class="twemoji"
-                              v-for="item in items"
+                <div class="box">
+                    <h3 class="title">
+                        <span class="emoji" v-if="getEmoji('art')">{{ getEmoji('art').emoji }}</span>
+                        <span>Palette</span>
+                    </h3>
+                    <div class="content">
+                        <span class="emoji"
+                              v-for="item in palette"
                               :title="item.name"
-                              @click="setCurrentEmoji(item.name); addToPalette(item.name);"
-                        >{{ item.emoji }}</span>
+                              @click="setCurrentEmoji(item.name)">{{ item.emoji }}</span>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <h3 class="title">
+                        <span class="emoji" v-if="getEmoji('books')">{{ getEmoji('books').emoji }}</span>
+                        <span>Library</span>
+                    </h3>
+                    <div class="box-form">
+                        <input class="form-control" type="text" placeholder="Search..." v-model="librarySearch">
+                    </div>
+                    <div class="content">
+                        <div class="section"
+                             v-for="(items, category) in emojiLibraryByCategory"
+                             v-if="items.filter((item) => item.description.indexOf(librarySearch) !== -1).length">
+                            <h4 class="section-title">{{ category }}</h4>
+                            <div class="section-content">
+                            <span class="emoji"
+                                  v-for="item in items"
+                                  v-if="item.description.indexOf(librarySearch) !== -1"
+                                  :title="item.name"
+                                  @click="setCurrentEmoji(item.name); addToPalette(item.name);">{{ item.emoji }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+
+    <transition name="fade">
+        <div id="message"
+             v-if="message.text.length > 0">
+            <div class="alert" :class="'alert-'+message.type">
+                {{ message.text }}
+            </div>
+        </div>
+    </transition>
 </div>
 <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
 <script src="https://twemoji.maxcdn.com/2/twemoji.min.js?2.3.0"></script>

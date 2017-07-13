@@ -10,11 +10,15 @@ let vm = new Vue({
     gridColumns: 12,
     grid: [],
     linebreak: "\n",
-    emojiSelector: '.twemoji',
     emojiLibrary: [],
     emojiLibraryByCategory: {},
     backgrounds: [],
     backgroundSearchStrings: ['tree','square','skin'],
+    librarySearch: '',
+    message: {
+      text: '',
+      type: 'success',
+    }
   },
   mounted: function(){
     this.fetchEmojiLibrary();
@@ -120,7 +124,30 @@ let vm = new Vue({
     addToPalette: function(name){
       if ( _.isUndefined( _.find(this.palette, {name: name} ))) {
         this.palette.push(this.getEmoji(name));
+        this.flashMessage('Added to Palette');
       }
+    },
+
+    /**
+     * Set a message to show the user
+     * @param text
+     * @param type
+     */
+    setMessage: function(text, type = 'success'){
+      this.message.text = text;
+      this.message.type = type;
+    },
+
+    /**
+     * Set a message for a period of time
+     *
+     * @param text
+     * @param type
+     * @param timeout
+     */
+    flashMessage: function(text, type, timeout = 2000){
+      this.setMessage(text, type);
+      setTimeout(() => this.message.text = '', timeout);
     },
 
     /**

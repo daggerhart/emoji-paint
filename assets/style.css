@@ -1,4 +1,6 @@
-
+body,html {
+    background-color: #fafafa;
+}
 #canvas {
     width: 100%;
     min-height: 32px;
@@ -11,7 +13,70 @@
     width: 0;
     border: 0;
 }
-.twemoji {
+.emoji {
     display: inline-block;
     min-width: 20px;
+    cursor: pointer;
+}
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0
+}
+#message {
+    position: fixed;
+    margin: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+#message .alert {
+    text-align: center;
+    font-size: 1.2em;
+    border-radius: 0;
+    border-bottom: 6px solid #00ff00;
+}
+.box {
+    margin: 6px 0;
+    background: #fff;
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.24);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+.box-form {
+    margin: 0;
+    padding: 0;
+}
+.box-form input {
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.box .title {
+    margin: 0;
+    padding: 6px 12px;
+    border-bottom: 1px solid #ddd;
+}
+.box .title .emoji {
+    padding-right: 12px;
+    border-right: 1px solid #eee;
+}
+.box .content {
+    margin: 0;
+    padding: 6px 12px;
+}
+
+.section {}
+
+.section-title {
+    margin: 0;
+    padding: 8px 4px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+.section-content {
+    margin: 0;
+    padding: 6px 12px;
 }
