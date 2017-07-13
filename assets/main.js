@@ -29,7 +29,7 @@ let vm = new Vue({
      */
     fetchEmojiLibrary: function(){
       axios
-        .get('assets/emoji.json')
+        .get('data/emoji.json')
         .then(response => {
           this.emojiLibrary = response.data;
           this.processEmojiLibrary();
