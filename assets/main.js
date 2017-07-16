@@ -156,7 +156,15 @@ let vm = new Vue({
      * @param y
      */
     paintCurrentEmojiOnGrid: function(x,y){
-      Vue.set(this.grid[y], x, this.currentEmoji);
+      // Reset the square to background emoji if re-clicking on current emoji
+      if( this.grid[y][x].name === this.currentEmoji.name ) {
+        Vue.set( this.grid[y], x, this.backgroundEmoji );
+      }
+
+      // Otherwise add current emoji to grid
+      else {
+        Vue.set(this.grid[y], x, this.currentEmoji);
+      }
     },
 
     /**
