@@ -62,8 +62,7 @@
                         <span>Copy to Clipboard</span>
                     </h3>
                     <div class="content">
-                        <button class="btn btn-default"
-                                @click="copyToClipboard()">Copy</button>
+                        <button class="btn btn-default" @click="copyToClipboard()">Copy</button>
                         <textarea id="canvas-copy" cols="35" rows="4"></textarea>
                     </div>
                 </div>
@@ -134,8 +133,7 @@
 
 
     <transition name="fade">
-        <div id="message"
-             v-if="message.text.length > 0">
+        <div id="message" v-if="message.text.length > 0">
             <div class="alert" :class="'alert-'+message.type">
                 {{ message.text }}
             </div>
@@ -147,6 +145,6 @@
 <script src="https://cdn.jsdelivr.net/vue/latest/vue.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
-<script src="assets/main.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

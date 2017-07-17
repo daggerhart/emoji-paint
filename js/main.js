@@ -1,5 +1,12 @@
 Vue.config.devtools = true;
 
+function Message(text = '',type = 'success'){
+  return {
+    text: text,
+    type: type
+  }
+}
+
 let vm = new Vue({
   el: '#app',
   data: {
@@ -15,10 +22,7 @@ let vm = new Vue({
     backgrounds: [],
     backgroundSearchStrings: ['tree','square','skin'],
     librarySearch: '',
-    message: {
-      text: '',
-      type: 'success',
-    }
+    message: Message()
   },
   mounted: function(){
     this.fetchEmojiLibrary();
@@ -107,6 +111,9 @@ let vm = new Vue({
       this.backgroundEmoji.isBackground = true;
     },
 
+    /**
+     * Loop through the grid and update all background emoji 
+     */
     updateBackgroundEmoji: function(){
       for( let y=0; y < this.gridRows; y++){
         for( let x=0; x < this.gridColumns; x++ ){
@@ -118,36 +125,25 @@ let vm = new Vue({
     },
 
     /**
+     * Set a message for a period of time
+     *
+     * @param message Message
+     * @param timeout
+     */
+    flashNotification: function(message, timeout = 2000){
+      this.message = message;
+      setTimeout(() => this.message = Message(), timeout);
+    },
+
+    /**
      * Add an emoji to the palette if it doesn't already exist
      * @param name
      */
     addToPalette: function(name){
       if ( _.isUndefined( _.find(this.palette, {name: name} ))) {
         this.palette.push(this.getEmoji(name));
-        this.flashMessage('Added to Palette');
+        this.$emit('notification', Message('Added to Palette'));
       }
-    },
-
-    /**
-     * Set a message to show the user
-     * @param text
-     * @param type
-     */
-    setMessage: function(text, type = 'success'){
-      this.message.text = text;
-      this.message.type = type;
-    },
-
-    /**
-     * Set a message for a period of time
-     *
-     * @param text
-     * @param type
-     * @param timeout
-     */
-    flashMessage: function(text, type, timeout = 2000){
-      this.setMessage(text, type);
-      setTimeout(() => this.message.text = '', timeout);
     },
 
     /**
@@ -200,8 +196,8 @@ let vm = new Vue({
     copyToClipboard: function(){
       let $target = document.querySelector('#canvas-copy');
       let output = '';
-      for( let y=0; y < this.gridRows; y++){
-        for( let x=0; x < this.gridColumns; x++ ){
+      for( let y=0; y < this.grid.length; y++){
+        for( let x=0; x < this.grid[y].length; x++ ){
           output += this.grid[y][x].emoji;
         }
         output += this.linebreak;
@@ -211,6 +207,7 @@ let vm = new Vue({
       $target.select();
 
       document.execCommand('copy');
+      this.flashNotification( Message('Copied to clipboard') );
     }
   }
 });
